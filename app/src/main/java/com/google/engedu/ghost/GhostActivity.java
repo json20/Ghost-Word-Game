@@ -19,6 +19,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,11 +44,13 @@ public class GhostActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ghost);
         AssetManager assetManager = getAssets();
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
+        try {
+            InputStream input = getAssets().open("words.txt");
+            dictionary = new SimpleDictionary(input);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         onStart(null);
     }
 
@@ -108,11 +111,22 @@ public class GhostActivity extends AppCompatActivity {
      */
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
-        return super.onKeyUp(keyCode, event);
+        TextView text = (TextView) findViewById(R.id.ghostText);
+        char c = (char) event.getUnicodeChar();
+        if (Character.isLetter(c)) {
+            text.append(Character.toString(c));
+            text.invalidate();
+        }
+        else {
+            return super.onKeyUp(keyCode, event);
+        }
+        Log.d("hello ", text.getText().toString());
+        Log.d("boolean", Boolean.toString(dictionary.isWord(text.getText().toString())));
+        if (dictionary.isWord(text.getText().toString())) {
+            Log.d("is a word ", text.getText().toString());
+            TextView label = (TextView) findViewById(R.id.gameStatus);
+            label.setText("Complete word");
+        }
+        return true;
     }
 }
