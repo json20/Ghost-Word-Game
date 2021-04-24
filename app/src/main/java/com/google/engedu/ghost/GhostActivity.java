@@ -98,9 +98,27 @@ public class GhostActivity extends AppCompatActivity {
 
     private void computerTurn() {
         TextView label = (TextView) findViewById(R.id.gameStatus);
+        TextView text = (TextView) findViewById(R.id.ghostText);
+        String word = text.getText().toString();
+        if (dictionary.isWord(word)) {
+            label.setText("User wins");
+            if (dictionary.getAnyWordStartingWith(word) == null) {
+                label.setText("Computer wins");
+                label.invalidate();
+            }
+            else {
+                String getWord = dictionary.getAnyWordStartingWith(word);
+                String letter = getWord.substring(word.length(), word.length() + 1);
+                Log.d("getWord", getWord);
+                Log.d("letter", letter);
+                text.setText(word + letter);
+                text.invalidate();
+            }
+        }
         // Do computer turn stuff then make it the user's turn again
         userTurn = true;
         label.setText(USER_TURN);
+        label.invalidate();
     }
 
     /**
@@ -116,16 +134,10 @@ public class GhostActivity extends AppCompatActivity {
         if (Character.isLetter(c)) {
             text.append(Character.toString(c));
             text.invalidate();
+            computerTurn();
         }
         else {
             return super.onKeyUp(keyCode, event);
-        }
-        Log.d("hello ", text.getText().toString());
-        Log.d("boolean", Boolean.toString(dictionary.isWord(text.getText().toString())));
-        if (dictionary.isWord(text.getText().toString())) {
-            Log.d("is a word ", text.getText().toString());
-            TextView label = (TextView) findViewById(R.id.gameStatus);
-            label.setText("Complete word");
         }
         return true;
     }

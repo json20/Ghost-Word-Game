@@ -15,11 +15,14 @@
 
 package com.google.engedu.ghost;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SimpleDictionary implements GhostDictionary {
     private ArrayList<String> words;
@@ -42,7 +45,38 @@ public class SimpleDictionary implements GhostDictionary {
 
     @Override
     public String getAnyWordStartingWith(String prefix) {
-        return null;
+        Random rand = new Random();
+        if (prefix == "") {
+            return words.get(rand.nextInt(words.size()));
+        }
+        else {
+            int low = 0;
+            int high = words.size() - 1;
+            String word =  binarySearch(prefix, null, low, high);
+            return word;
+        }
+    }
+
+
+
+    private String binarySearch(String prefix, String foundWord, int low, int high) {
+        int index;
+        if (low > high) {
+            return null;
+        }
+        index = (low + high) / 2;
+        if ((words.get(index).length() > prefix.length()) &&
+        (prefix.compareTo(words.get(index).substring(0, prefix.length())) == 0)) {
+            Log.d("found word", words.get(index));
+            foundWord = words.get(index);
+        }
+        else if (prefix.compareTo(words.get(index)) < 0) {
+            foundWord = binarySearch(prefix, foundWord, low, index - 1);
+        }
+        else {
+            foundWord = binarySearch(prefix, foundWord, index + 1, high);
+        }
+        return foundWord;
     }
 
     @Override
